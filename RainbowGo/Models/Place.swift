@@ -2,7 +2,7 @@ import Foundation
 import MapKit
 
 struct Place: Identifiable, Hashable {
-    let id = UUID()
+    let id: String
     let name: String
     let category: PlaceCategory
     let coordinate: CLLocationCoordinate2D
@@ -11,23 +11,17 @@ struct Place: Identifiable, Hashable {
     let phone: String?
     let url: URL?
     let distance: CLLocationDistance?
+    let matchReason: String
 
-    static func == (lhs: Place, rhs: Place) -> Bool {
-        lhs.name == rhs.name && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-        hasher.combine(coordinate.latitude)
-        hasher.combine(coordinate.longitude)
-    }
+    static func == (lhs: Place, rhs: Place) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
 enum PlaceCategory: String, CaseIterable, Identifiable {
     case all = "Tutti"
     case bar = "Bar"
     case club = "Club"
-    case cafe = "Café"
+    case sauna = "Saune"
     case community = "Community"
     case hotel = "Hotel"
     case beach = "Spiagge"
@@ -39,7 +33,7 @@ enum PlaceCategory: String, CaseIterable, Identifiable {
         case .all: return "sparkles"
         case .bar: return "wineglass.fill"
         case .club: return "music.note"
-        case .cafe: return "cup.and.saucer.fill"
+        case .sauna: return "drop.degreesign.fill"
         case .community: return "person.3.fill"
         case .hotel: return "bed.double.fill"
         case .beach: return "beach.umbrella.fill"
@@ -48,12 +42,12 @@ enum PlaceCategory: String, CaseIterable, Identifiable {
 
     var searchTerms: [String] {
         switch self {
-        case .all: return ["gay bar", "LGBTQ bar", "queer club", "LGBTQ community centre", "gay friendly café", "gay friendly hotel", "gay beach"]
+        case .all: return ["gay bar", "LGBTQ bar", "queer club", "gay sauna", "LGBTQ center", "gay hotel", "gay beach"]
         case .bar: return ["gay bar", "LGBTQ bar", "queer bar"]
         case .club: return ["gay club", "LGBTQ nightclub", "queer club"]
-        case .cafe: return ["LGBTQ café", "gay friendly café", "queer café"]
-        case .community: return ["LGBTQ community centre", "gay association", "queer community"]
-        case .hotel: return ["gay friendly hotel", "LGBTQ hotel"]
+        case .sauna: return ["gay sauna", "LGBTQ sauna"]
+        case .community: return ["LGBTQ center", "gay association", "queer community"]
+        case .hotel: return ["gay hotel", "LGBTQ hotel"]
         case .beach: return ["gay beach", "LGBTQ beach"]
         }
     }

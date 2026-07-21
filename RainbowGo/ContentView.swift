@@ -1,24 +1,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("appearance") private var appearance = "dark"
+    @AppStorage("appearance") private var appearance = "system"
 
     var body: some View {
         TabView {
             HomeView()
-                .tabItem { Label("Scopri", systemImage: "location.magnifyingglass") }
+                .tabItem { Label("Esplora", systemImage: "safari.fill") }
 
-            AppInfoView()
-                .tabItem { Label("Guida", systemImage: "book.pages.fill") }
+            DiscoverInfoView()
+                .tabItem { Label("Come funziona", systemImage: "checkmark.shield.fill") }
 
             SettingsView()
-                .tabItem { Label("Impostazioni", systemImage: "slider.horizontal.3") }
+                .tabItem { Label("Impostazioni", systemImage: "gearshape.fill") }
         }
-        .tint(.purple)
-        .preferredColorScheme(colorScheme)
+        .tint(Color.accentColor)
+        .preferredColorScheme(selectedScheme)
     }
 
-    private var colorScheme: ColorScheme? {
+    private var selectedScheme: ColorScheme? {
         switch appearance {
         case "light": return .light
         case "dark": return .dark
@@ -27,128 +27,100 @@ struct ContentView: View {
     }
 }
 
-private struct AppInfoView: View {
+private struct DiscoverInfoView: View {
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(red: 0.035, green: 0.04, blue: 0.075).ignoresSafeArea()
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 18) {
-                        VStack(alignment: .leading, spacing: 9) {
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(.system(size: 34, weight: .bold))
-                            Text("Come funziona")
-                                .font(.largeTitle.bold())
-                            Text("RainbowGo cerca automaticamente luoghi LGBTQ+ tramite Apple Maps. Non è necessario inserire manualmente locali o città.")
-                                .foregroundStyle(.white.opacity(0.65))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(22)
-                        .background(LinearGradient(colors: [.pink, .purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 28))
-
-                        guideRow(icon: "location.fill", title: "Posizione automatica", text: "All'avvio viene rilevata la città in cui ti trovi.")
-                        guideRow(icon: "building.2.fill", title: "Scegli una città", text: "Puoi cercare qualsiasi altra città dalla Home.")
-                        guideRow(icon: "checkmark.shield.fill", title: "Solo risultati della città", text: "I luoghi esterni alla città selezionata vengono esclusi.")
-                        guideRow(icon: "map.fill", title: "Mappa e indicazioni", text: "Apri la mappa o avvia subito il percorso con Apple Maps.")
+            ScrollView {
+                VStack(spacing: 18) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 34, weight: .bold))
+                        Text("Solo luoghi LGBTQ+")
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                        Text("RainbowGo mostra solo risultati che contengono un riferimento LGBTQ+ esplicito nel nome, nel sito o nell'indirizzo. I locali generici vengono esclusi.")
+                            .foregroundStyle(.secondary)
                     }
-                    .padding(18)
-                    .padding(.bottom, 80)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(22)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+
+                    infoRow("location.fill", "Città precisa", "Puoi usare la posizione attuale oppure scegliere manualmente una città.")
+                    infoRow("line.3.horizontal.decrease.circle.fill", "Filtro rigoroso", "Meglio pochi risultati affidabili che molti locali non pertinenti.")
+                    infoRow("map.fill", "Apple Maps", "Indirizzi, siti e indicazioni vengono aperti direttamente nelle mappe.")
                 }
+                .padding(18)
             }
-            .navigationTitle("Guida")
-            .navigationBarTitleDisplayMode(.inline)
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("Come funziona")
         }
     }
 
-    private func guideRow(icon: String, title: String, text: String) -> some View {
-        HStack(alignment: .top, spacing: 14) {
+    private func infoRow(_ icon: String, _ title: String, _ text: String) -> some View {
+        HStack(alignment: .top, spacing: 15) {
             Image(systemName: icon)
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 45, height: 45)
-                .background(.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 14))
+                .frame(width: 46, height: 46)
+                .background(Color.accentColor.opacity(0.13), in: RoundedRectangle(cornerRadius: 15))
+                .foregroundStyle(Color.accentColor)
             VStack(alignment: .leading, spacing: 5) {
-                Text(title).font(.headline).foregroundStyle(.white)
-                Text(text).font(.subheadline).foregroundStyle(.white.opacity(0.58))
+                Text(title).font(.headline)
+                Text(text).font(.subheadline).foregroundStyle(.secondary)
             }
+            Spacer()
         }
-        .padding(16)
-        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 21))
-        .overlay(RoundedRectangle(cornerRadius: 21).stroke(.white.opacity(0.07)))
+        .padding(17)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 22))
     }
 }
 
 private struct SettingsView: View {
-    @AppStorage("appearance") private var appearance = "dark"
+    @AppStorage("appearance") private var appearance = "system"
     @AppStorage("searchRadiusKm") private var searchRadiusKm = 15.0
     @AppStorage("distanceUnit") private var distanceUnit = "metric"
+    @AppStorage("showVerification") private var showVerification = true
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(red: 0.035, green: 0.04, blue: 0.075).ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: 16) {
-                        settingSection("Aspetto") {
-                            Picker("Tema", selection: $appearance) {
-                                Text("Sistema").tag("system")
-                                Text("Chiaro").tag("light")
-                                Text("Scuro").tag("dark")
-                            }
-                            .pickerStyle(.segmented)
-                        }
-
-                        settingSection("Ricerca") {
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack {
-                                    Label("Raggio massimo", systemImage: "scope")
-                                    Spacer()
-                                    Text("\(Int(searchRadiusKm)) km").foregroundStyle(.secondary)
-                                }
-                                Slider(value: $searchRadiusKm, in: 5...30, step: 5)
-                            }
-                            Divider().overlay(.white.opacity(0.08))
-                            Picker("Distanze", selection: $distanceUnit) {
-                                Text("Chilometri").tag("metric")
-                                Text("Miglia").tag("imperial")
-                            }
-                        }
-
-                        settingSection("Privacy") {
-                            Label("La posizione viene usata solo sul dispositivo", systemImage: "hand.raised.fill")
-                            Divider().overlay(.white.opacity(0.08))
-                            Label("Nessun account richiesto", systemImage: "person.crop.circle.badge.checkmark")
-                            Divider().overlay(.white.opacity(0.08))
-                            Label("Nessun database personale", systemImage: "externaldrive.badge.xmark")
-                        }
-
-                        settingSection("Informazioni") {
-                            HStack { Text("Applicazione"); Spacer(); Text("RainbowGo").foregroundStyle(.secondary) }
-                            Divider().overlay(.white.opacity(0.08))
-                            HStack { Text("Versione"); Spacer(); Text("0.2 (3)").foregroundStyle(.secondary) }
-                            Divider().overlay(.white.opacity(0.08))
-                            Label("Dati dei luoghi forniti da Apple Maps", systemImage: "apple.logo")
-                        }
+            Form {
+                Section {
+                    Picker("Aspetto", selection: $appearance) {
+                        Label("Automatico", systemImage: "circle.lefthalf.filled").tag("system")
+                        Label("Chiaro", systemImage: "sun.max.fill").tag("light")
+                        Label("Scuro", systemImage: "moon.fill").tag("dark")
                     }
-                    .padding(18)
-                    .padding(.bottom, 80)
+                } header: { Text("Tema") } footer: {
+                    Text("Automatico segue l'aspetto impostato su iPhone.")
+                }
+
+                Section("Ricerca") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Label("Raggio massimo", systemImage: "scope")
+                            Spacer()
+                            Text("\(Int(searchRadiusKm)) km").foregroundStyle(.secondary)
+                        }
+                        Slider(value: $searchRadiusKm, in: 5...30, step: 5)
+                    }
+                    Picker("Unità distanza", selection: $distanceUnit) {
+                        Text("Chilometri").tag("metric")
+                        Text("Miglia").tag("imperial")
+                    }
+                    Toggle("Mostra verifica LGBTQ+", isOn: $showVerification)
+                }
+
+                Section("Dati e privacy") {
+                    Label("Nessun account richiesto", systemImage: "person.crop.circle.badge.checkmark")
+                    Label("Posizione usata solo per la ricerca", systemImage: "location.shield.fill")
+                    Label("Nessun elenco inserito manualmente", systemImage: "arrow.triangle.2.circlepath")
+                }
+
+                Section("Applicazione") {
+                    LabeledContent("Nome", value: "RainbowGo")
+                    LabeledContent("Versione", value: "0.3")
+                    LabeledContent("Build", value: "4")
                 }
             }
             .navigationTitle("Impostazioni")
-        }
-    }
-
-    private func settingSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 13) {
-            Text(title.uppercased())
-                .font(.caption2.bold())
-                .tracking(1.2)
-                .foregroundStyle(.white.opacity(0.45))
-            VStack(alignment: .leading, spacing: 13) { content() }
-                .foregroundStyle(.white)
-                .padding(16)
-                .background(.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 21))
-                .overlay(RoundedRectangle(cornerRadius: 21).stroke(.white.opacity(0.075)))
         }
     }
 }
