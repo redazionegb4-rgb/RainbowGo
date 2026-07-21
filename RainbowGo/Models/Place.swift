@@ -7,6 +7,7 @@ struct Place: Identifiable, Hashable {
     let category: PlaceCategory
     let coordinate: CLLocationCoordinate2D
     let address: String
+    let city: String
     let phone: String?
     let url: URL?
     let distance: CLLocationDistance?
@@ -47,11 +48,11 @@ enum PlaceCategory: String, CaseIterable, Identifiable {
 
     var searchTerms: [String] {
         switch self {
-        case .all: return ["gay bar", "LGBTQ bar", "queer club", "LGBTQ community center", "gay friendly cafe"]
+        case .all: return ["gay bar", "LGBTQ bar", "queer club", "LGBTQ community centre", "gay friendly café", "gay friendly hotel", "gay beach"]
         case .bar: return ["gay bar", "LGBTQ bar", "queer bar"]
         case .club: return ["gay club", "LGBTQ nightclub", "queer club"]
-        case .cafe: return ["LGBTQ cafe", "gay friendly cafe", "queer cafe"]
-        case .community: return ["LGBTQ community center", "gay association", "queer community"]
+        case .cafe: return ["LGBTQ café", "gay friendly café", "queer café"]
+        case .community: return ["LGBTQ community centre", "gay association", "queer community"]
         case .hotel: return ["gay friendly hotel", "LGBTQ hotel"]
         case .beach: return ["gay beach", "LGBTQ beach"]
         }
